@@ -48,7 +48,7 @@ end
 
 
 
-
+<
 % eof
 
 clear
@@ -62,6 +62,9 @@ a = audioDatastore('wav_rec', 'includesubfolders', true);
 trainDatastoreCount = countEachLabel(aTrain);
 testDatastoreCount = countEachLabel(aTest);
 
+
+reset(aTrain)
+
 % feature extraction
 disp('(2) feature extraction')
 l_win = 0.03;
@@ -71,11 +74,24 @@ rcr_thr = 1000;
 
 features = [];
 labels = [];
-energyThreshold =  0.005;
+energyThreshold = 0.005;
 zcrThreshold = 0.2;
 
+keepLen = round(length(aTrain));
 
-keepLen = rount(lenght(aTrain));
+while hasdata(aTrain)
+    [audioIn, dsInfo] = read(adsTrain);
 
+    audioIn = audioIn(1:keepLen);
+    feat = extract(aTest, audioIn);
+    isSpeech = feat(:, featureMap.shortTimeEnergy) > energyThreshold;
+    isVoiced = feat(:, featureMap.zerocrossrate) < zcrThreshold;
+    voicedSpeech = isSpeech & isVoiced;
+    feat(~voicedSpeech, :) = [];
+    feat(:, [featureMap.zerocrossrate, featureMap.shorTimeEnergy]) = [];
+    label = repelem(dsInfro.Label, size(feat, 1));
+    features = [features;feat];
+    labels = [labels, label];
+end
 
 
