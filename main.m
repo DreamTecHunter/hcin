@@ -69,5 +69,13 @@ l_ol = 0.0025;
 pov_thr = -40;
 rcr_thr = 1000;
 
+features = [];
+labels = [];
+energyThreshold =  0.005;
+zcrThreshold = 0.2;
+
+
+keepLen = rount(lenght(aTrain));
+
 
 
